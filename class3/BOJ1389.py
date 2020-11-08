@@ -4,31 +4,31 @@ from collections import deque
 
 def search(idx):
     q = deque()
+    q.append((idx, 0))
     visited = {idx}
-    for i in link[idx]:
-        q.append((i, 1))
-        visited.add(i)
-    result = len(q)
+    result = 0
     while q:
-        current, value = q.popleft()
-
-        for i in link[current]:
-            if i in visited:
-                continue
-            q.append((i, value+1))
-            visited.add(i)
-            result += (value+1)
+        current, cnt = q.popleft()
+        result += cnt
+        for friend in link[current]:
+            if friend not in visited:
+                q.append((friend, cnt+1))
+                visited.add(friend)
     return result
 
+input = sys.stdin.readline
 
-N, M = map(int, sys.stdin.readline().split())
-link = [list() for _ in range(1+N)]
+N, M = map(int, input().split())
+link = [set() for _ in range(N+1)]
 for _ in range(M):
-    a, b = map(int, sys.stdin.readline().split())
-    link[a].append(b)
-    link[b].append(a)
-# print(link)
-result = []
+    A, B = map(int, input().split())
+    link[A].add(B)
+    link[B].add(A)
+
+answer = 0
+kevin = float('inf')
 for i in range(1, N+1):
-    result.append(search(i))
-print(1 + result.index(min(result)))
+    if search(i) < kevin:
+        kevin = search(i)
+        answer = i
+print(answer)
